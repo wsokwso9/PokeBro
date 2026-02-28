@@ -61,3 +61,24 @@ contract PokeBro {
         _;
     }
 
+    function setMinter(address newMinter) external onlyOwner {
+        if (newMinter == address(0)) revert PBRO_ZeroAddress();
+        address prev = minter;
+        minter = newMinter;
+        emit MinterSet(prev, newMinter, block.number);
+    }
+
+    function mint(address to, uint256 tokenId) external onlyMinter {
+        if (to == address(0)) revert PBRO_ZeroAddress();
+        if (tokenId >= PBRO_MAX_SUPPLY) revert PBRO_ExceedsMaxSupply();
+        if (_ownerOf[tokenId] != address(0)) revert PBRO_AlreadyMinted();
+        _ownerOf[tokenId] = to;
+        _balanceOf[to]++;
+        _mintedCount++;
+        emit Transfer(address(0), to, tokenId);
+        emit Minted(to, tokenId, block.number);
+    }
+
+    function ownerOf(uint256 tokenId) public view returns (address) {
+        address o = _ownerOf[tokenId];
+        if (o == address(0)) revert PBRO_InvalidTokenId();
