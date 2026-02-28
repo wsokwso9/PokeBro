@@ -19,3 +19,24 @@ contract PokeBro {
     event Minted(address indexed to, uint256 indexed tokenId, uint256 atBlock);
 
     error PBRO_ZeroAddress();
+    error PBRO_NotMinter();
+    error PBRO_ExceedsMaxSupply();
+    error PBRO_AlreadyMinted();
+    error PBRO_NotOwner();
+    error PBRO_InvalidTokenId();
+    error PBRO_NotOwnerNorApproved();
+
+    uint256 public constant PBRO_MAX_SUPPLY = 100000;
+    bytes32 public constant PBRO_DOMAIN = keccak256("PokeBro.NFT.v1");
+    uint256 public constant PBRO_CHAIN_SALT = 0x8D2f4A6c8E0b2D4f6A8c0E2b4D6f8A0c2E4b6D8;
+
+    string public constant name = "PokeBro NFT";
+    string public constant symbol = "PBRO";
+
+    address public immutable owner;
+    address public minter;
+    uint256 public immutable deployBlock;
+    bytes32 public immutable genesisHash;
+
+    uint256 private _mintedCount;
+    mapping(uint256 => address) private _ownerOf;
