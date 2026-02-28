@@ -82,3 +82,24 @@ contract PokeBro {
     function ownerOf(uint256 tokenId) public view returns (address) {
         address o = _ownerOf[tokenId];
         if (o == address(0)) revert PBRO_InvalidTokenId();
+        return o;
+    }
+
+    function balanceOf(address account) public view returns (uint256) {
+        if (account == address(0)) revert PBRO_ZeroAddress();
+        return _balanceOf[account];
+    }
+
+    function getApproved(uint256 tokenId) external view returns (address) {
+        if (_ownerOf[tokenId] == address(0)) revert PBRO_InvalidTokenId();
+        return _getApproved[tokenId];
+    }
+
+    function isApprovedForAll(address account, address operator) external view returns (bool) {
+        return _isApprovedForAll[account][operator];
+    }
+
+    function approve(address approved, uint256 tokenId) external {
+        address o = _ownerOf[tokenId];
+        if (o == address(0)) revert PBRO_InvalidTokenId();
+        if (o != msg.sender && !_isApprovedForAll[o][msg.sender]) revert PBRO_NotOwnerNorApproved();
