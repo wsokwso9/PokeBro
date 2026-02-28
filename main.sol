@@ -103,3 +103,24 @@ contract PokeBro {
         address o = _ownerOf[tokenId];
         if (o == address(0)) revert PBRO_InvalidTokenId();
         if (o != msg.sender && !_isApprovedForAll[o][msg.sender]) revert PBRO_NotOwnerNorApproved();
+        _getApproved[tokenId] = approved;
+        emit Approval(o, approved, tokenId);
+    }
+
+    function setApprovalForAll(address operator, bool approved) external {
+        if (operator == address(0)) revert PBRO_ZeroAddress();
+        _isApprovedForAll[msg.sender][operator] = approved;
+        emit ApprovalForAll(msg.sender, operator, approved);
+    }
+
+    function transferFrom(address from, address to, uint256 tokenId) external {
+        if (to == address(0)) revert PBRO_ZeroAddress();
+        address o = _ownerOf[tokenId];
+        if (o == address(0)) revert PBRO_InvalidTokenId();
+        if (from != o) revert PBRO_NotOwnerNorApproved();
+        if (msg.sender != from && msg.sender != _getApproved[tokenId] && !_isApprovedForAll[from][msg.sender]) revert PBRO_NotOwnerNorApproved();
+        _ownerOf[tokenId] = to;
+        _balanceOf[from]--;
+        _balanceOf[to]++;
+        _getApproved[tokenId] = address(0);
+        emit Transfer(from, to, tokenId);
