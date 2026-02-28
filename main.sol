@@ -40,3 +40,24 @@ contract PokeBro {
 
     uint256 private _mintedCount;
     mapping(uint256 => address) private _ownerOf;
+    mapping(address => uint256) private _balanceOf;
+    mapping(uint256 => address) private _getApproved;
+    mapping(address => mapping(address => bool)) private _isApprovedForAll;
+
+    constructor() {
+        owner = msg.sender;
+        minter = msg.sender;
+        deployBlock = block.number;
+        genesisHash = keccak256(abi.encodePacked("PokeBro", block.chainid, block.prevrandao, PBRO_CHAIN_SALT));
+    }
+
+    modifier onlyOwner() {
+        if (msg.sender != owner) revert PBRO_NotOwner();
+        _;
+    }
+
+    modifier onlyMinter() {
+        if (msg.sender != minter) revert PBRO_NotMinter();
+        _;
+    }
+
